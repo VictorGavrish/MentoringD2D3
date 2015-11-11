@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Client
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            Console.WriteLine("Enter command:");
             while (true)
             {
-                Console.WriteLine("Enter task:");
                 // two numbers: duration and optional delay
                 // two commands: start -n - starts new
                 // start --in
@@ -26,22 +22,8 @@ namespace Client
                 // two clients
 
                 var input = Console.ReadLine();
-                int task;
-                if (int.TryParse(input, out task))
-                {
-                    try
-                    {
-                        SocketClient.SimpleSend(input);
-                    }
-                    catch (ConnectionException ce)
-                    {
-                        Console.WriteLine(ce.Message);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"Error parsing {input}");
-                }
+                var response = SocketClient.SimpleSend(input);
+                Console.WriteLine(response);
             }
         }
     }

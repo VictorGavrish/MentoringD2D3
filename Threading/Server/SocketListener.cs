@@ -16,7 +16,7 @@ namespace Server
             _listener.Bind(endPoint);
         }
 
-        public AppTask GetNextTask()
+        public Command GetNextTask()
         {
             _listener.Listen(100);
 
@@ -34,22 +34,26 @@ namespace Server
                 }
             }
 
-            var msg = Encoding.UTF8.GetBytes(data);
-
-            handler.Send(msg);
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Close();
-
             var cutoff = data.IndexOf("<EOF>", StringComparison.Ordinal);
             data = data.Substring(0, cutoff);
 
-            int duration;
-            if (int.TryParse(data, out duration))
+            try
             {
-                return new AppTask {Duration = duration};
+                var command = Command.Parse(data);
+                var msg = Encoding.UTF8.GetBytes("OK");
+                handler.Send(msg);
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+                return command;
             }
-
-            throw new Exception("Cannot parse task");
+            catch (CommandParseException cpe)
+            {
+                var msg = Encoding.UTF8.GetBytes(cpe.Message);
+                handler.Send(msg);
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+                throw;
+            }
         }
     }
 }

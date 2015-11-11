@@ -43,8 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command.cs" />
+    <Compile Include="CommandParseException.cs" />
+    <Compile Include="CommandProcessor.cs" />
+    <Compile Include="CommandType.cs" />
+    <Compile Include="ConsoleTaskExtensions.cs" />
+    <Compile Include="DisplayLoop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheduler.cs" />
     <Compile Include="SocketListener.cs" />
     <Compile Include="AppTask.cs" />
     <Compile Include="TaskStatus.cs" />

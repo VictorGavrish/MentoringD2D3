@@ -1,20 +1,12 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization;
 using System.Text;
 
 namespace Client
 {
     public class SocketClient
     {
-        //private readonly IPAddress _ipAddress;
-        //public SocketClient(IPAddress ipAddress)
-        //{
-        //    _ipAddress = ipAddress;
-        //}
-
-        public static int SimpleSend(string input)
+        public static string SimpleSend(string input)
         {
             // Data buffer for incoming data.
             var bytes = new byte[1024];
@@ -39,18 +31,13 @@ namespace Client
 
             // Receive the response from the remote device.
             var bytesRec = sender.Receive(bytes);
-            var echo = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-            
+            var response = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+
             // Release the socket.
             sender.Shutdown(SocketShutdown.Both);
             sender.Close();
 
-            if (echo != input)
-            {
-                throw new ConnectionException("Echoed data does not equal sent data");
-            }
-
-            return 1;
+            return response;
         }
     }
 }
