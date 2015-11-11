@@ -8,7 +8,7 @@ namespace Server
 
         public static string GetStatusLine(this AppTask task)
         {
-            return $"{task.GetIdentifierString()} | {task.GetProgressBar()} | {task.Status.GetString()}";
+            return $"{task.GetIdentifierString()} | {task.GetProgressBar()} | {task.GetStatusString()}";
         }
 
         public static string GetProgressBar(this AppTask task, uint width = 0)
@@ -25,9 +25,14 @@ namespace Server
             return stringBuilder.ToString();
         }
 
-        public static string GetString(this TaskStatus status)
+        public static string GetStatusString(this AppTask task)
         {
-            return status.ToString();
+            var statusString = task.Status.ToString();
+            if (task.PlaceInQueue.HasValue)
+            {
+                statusString += $" ({task.PlaceInQueue.Value})";
+            }
+            return statusString;
         }
 
         public static string GetIdentifierString(this AppTask task)

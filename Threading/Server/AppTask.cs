@@ -16,6 +16,7 @@ namespace Server
 
         public Task Task { get; private set; }
         public int Id { get; set; }
+        public int? PlaceInQueue { get; set; }
         public int Duration { get; set; }
         public double Percent { get; set; }
         public TaskStatus Status { get; set; }

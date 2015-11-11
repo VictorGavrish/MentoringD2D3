@@ -22,7 +22,8 @@ namespace Server
         public void Enqueue(AppTask task)
         {
             task.Status = TaskStatus.Scheduled;
-            if (!_waitingQueue.TryAdd(Interlocked.Increment(ref _queueNumber), task))
+            task.PlaceInQueue = Interlocked.Increment(ref _queueNumber);
+            if (!_waitingQueue.TryAdd(task.PlaceInQueue.Value, task))
             {
                 return;
             }
