@@ -1,90 +1,53 @@
-using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Server
 {
     public class CommandProcessor
     {
         private readonly BlockingCollection<AppTask> _allTasks;
-        private readonly SocketListener _listener;
-        private readonly Scheduler _scheduler;
+        private readonly AppTaskQueue _queue;
         private int _lastTaskId;
 
-        public CommandProcessor(Scheduler scheduler, BlockingCollection<AppTask> allTasks, SocketListener listener)
+        public CommandProcessor(BlockingCollection<AppTask> allTasks, AppTaskQueue queue)
         {
-            _scheduler = scheduler;
             _allTasks = allTasks;
-            _listener = listener;
+            _queue = queue;
         }
 
-        public void Start(CancellationToken cancellationToken)
+        public void Process(ICommand command)
         {
-            Task.Run(() => CommandLoop(), cancellationToken);
+            dynamic dynamicCommand = command;
+            ProcessCommand(dynamicCommand);
         }
 
-        private void CommandLoop()
-        {
-            while (true)
-            {
-                try
-                {
-                    var command = _listener.GetNextTask();
-                    ProcessCommand(command);
-                }
-                catch (Exception e)
-                {
-                }
-            }
-        }
-
-        private void ProcessCommand(Command command)
-        {
-            switch (command.Type)
-            {
-            case CommandType.Create:
-                ProcessCreateCommand(command);
-                break;
-            case CommandType.Start:
-                ProcessStartCommand(command);
-                break;
-            case CommandType.Pause:
-                ProcessPauseCommand(command);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private void ProcessPauseCommand(Command command)
+        private void ProcessCommand(StopCommand command)
         {
             var task = _allTasks.Single(at => at.Id == command.TaskId);
-            _scheduler.Pause(task);
+            _queue.Pause(task);
         }
 
-        private void ProcessStartCommand(Command command)
+        private void ProcessCommand(StartCommand command)
         {
             var task = _allTasks.Single(at => at.Id == command.TaskId);
-            _scheduler.Enqueue(task);
+            _queue.Enqueue(task);
         }
 
-        private void ProcessCreateCommand(Command command)
+        private void ProcessCommand(CreateCommand command)
         {
             var appTask = new AppTask
             {
                 Id = ++_lastTaskId,
-                Duration = command.Duration,
+                Steps = command.Steps,
                 Delay = command.Delay,
                 DependentTaskIds = command.DependentTaskIds,
-                Status = TaskStatus.Stopped
+                Status = TaskStatus.Created
             };
             _allTasks.Add(appTask);
 
             if (command.StartUponCreation)
             {
-                _scheduler.Enqueue(appTask);
+                _queue.Enqueue(appTask);
             }
         }
     }

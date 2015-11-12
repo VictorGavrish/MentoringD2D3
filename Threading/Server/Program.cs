@@ -9,6 +9,28 @@ namespace Server
     {
         private static void Main(string[] args)
         {
+            var semaphore = GetSemaphoreFromUser();
+            var cancelationSource = new CancellationTokenSource();
+            var allTaskList = new BlockingCollection<AppTask>();
+
+            var scheduler = new AppTaskScheduler(semaphore);
+            var queue = new AppTaskQueue(allTaskList, scheduler);
+            var listener = new SocketListener(IPAddress.Loopback, 6666);
+
+            var display = new Display(allTaskList);
+            var processor = new CommandProcessor(allTaskList, queue);
+            var commandProcessor = new CommandDispatcher(listener, processor);
+
+            commandProcessor.Start(cancelationSource.Token);
+            display.Start(cancelationSource.Token);
+
+            Console.ReadLine();
+
+            cancelationSource.Cancel();
+        }
+
+        private static SemaphoreSlim GetSemaphoreFromUser()
+        {
             SemaphoreSlim semaphore;
             while (true)
             {
@@ -22,22 +44,7 @@ namespace Server
                 }
                 Console.WriteLine($"Error parsing as integer: {input}");
             }
-
-            var cancelationSource = new CancellationTokenSource();
-
-            var allTaskList = new BlockingCollection<AppTask>();
-
-            var scheduler = new Scheduler(allTaskList, semaphore);
-            var listener = new SocketListener(IPAddress.Loopback, 6666);
-
-            var display = new Display(allTaskList);
-            var commandProcessor = new CommandProcessor(scheduler, allTaskList, listener);
-
-            commandProcessor.Start(cancelationSource.Token);
-            display.Start(cancelationSource.Token);
-
-            Console.ReadKey();
-            cancelationSource.Cancel();
+            return semaphore;
         }
     }
 }

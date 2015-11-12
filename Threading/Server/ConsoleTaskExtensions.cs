@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 
 namespace Server
@@ -22,22 +23,40 @@ namespace Server
             {
                 stringBuilder.Append(i < task.Percent * width ? "*" : " ");
             }
+            stringBuilder.Append($" | {task.Percent:00.0%}");
             return stringBuilder.ToString();
         }
 
         public static string GetStatusString(this AppTask task)
         {
-            var statusString = task.Status.ToString();
-            if (task.PlaceInQueue.HasValue)
+            var stringBuilder = new StringBuilder(task.Status.ToString());
+            if (task.Status == TaskStatus.Queued)
             {
-                statusString += $" ({task.PlaceInQueue.Value})";
+                if (task.PlaceInQueue.HasValue)
+                {
+                    stringBuilder.Append($" ({task.PlaceInQueue.Value})");
+                }
+                if (task.Delay.HasValue)
+                {
+                    stringBuilder.Append($" | delayed by {task.Delay.Value:G}");
+                }
+                if (task.DependentTaskIds.Any())
+                {
+                    stringBuilder.Append(" | waiting for task");
+                    stringBuilder.Append(task.DependentTaskIds.Count == 1 ? " " : "s ");
+                    foreach (var id in task.DependentTaskIds)
+                    {
+                        stringBuilder.Append($"{id} ");
+                    }
+                    stringBuilder.Append("to complete");
+                }
             }
-            return statusString;
+            return stringBuilder.ToString();
         }
 
         public static string GetIdentifierString(this AppTask task)
         {
-            return $"#{task.Id:D2} ({task.Duration:D2})";
+            return $"#{task.Id:D2} ({task.Steps:D2})";
         }
     }
 }

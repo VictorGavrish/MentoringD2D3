@@ -2,10 +2,12 @@ namespace Server
 {
     public enum TaskStatus
     {
-        Stopped,
+        Created,
+        Queued,
         Scheduled,
         Running,
-        Paused,
+        Waiting,
+        Stopped,
         Complete
     }
 }

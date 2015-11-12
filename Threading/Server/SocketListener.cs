@@ -16,43 +16,40 @@ namespace Server
             _listener.Bind(endPoint);
         }
 
-        public Command GetNextTask()
+        public ICommand GetNextCommand()
         {
-            _listener.Listen(100);
-
-            var handler = _listener.Accept();
-            string data = null;
-
-            while (true)
+            _listener.Listen(1);
+            using (var handler = _listener.Accept())
             {
-                var bytes = new byte[1024];
-                var bytesRec = handler.Receive(bytes);
-                data += Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                if (data.IndexOf("<EOF>", StringComparison.Ordinal) > -1)
+                string data = null;
+
+                while (true)
                 {
-                    break;
+                    var bytes = new byte[1024];
+                    var bytesRec = handler.Receive(bytes);
+                    data += Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                    if (data.IndexOf("<EOF>", StringComparison.Ordinal) > -1)
+                    {
+                        break;
+                    }
                 }
-            }
 
-            var cutoff = data.IndexOf("<EOF>", StringComparison.Ordinal);
-            data = data.Substring(0, cutoff);
+                var cutoff = data.IndexOf("<EOF>", StringComparison.Ordinal);
+                data = data.Substring(0, cutoff);
 
-            try
-            {
-                var command = Command.Parse(data);
-                var msg = Encoding.UTF8.GetBytes("OK");
-                handler.Send(msg);
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
-                return command;
-            }
-            catch (CommandParseException cpe)
-            {
-                var msg = Encoding.UTF8.GetBytes(cpe.Message);
-                handler.Send(msg);
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
-                throw;
+                try
+                {
+                    var command = CommandParser.Parse(data);
+                    var msg = Encoding.UTF8.GetBytes("OK");
+                    handler.Send(msg);
+                    return command;
+                }
+                catch (CommandParseException cpe)
+                {
+                    var msg = Encoding.UTF8.GetBytes(cpe.Message);
+                    handler.Send(msg);
+                    throw;
+                }
             }
         }
     }

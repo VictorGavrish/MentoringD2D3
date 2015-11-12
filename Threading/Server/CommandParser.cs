@@ -1,19 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Server
 {
-    public class Command
+    public static class CommandParser
     {
-        public int? TaskId { get; set; }
-        public CommandType Type { get; set; }
-        public TimeSpan? Delay { get; set; }
-        public bool StartUponCreation { get; set; }
-        public List<int> DependentTaskIds { get; set; } = new List<int>();
-        public int Duration { get; set; }
-
-        public static Command Parse(string text)
+        public static ICommand Parse(string text)
         {
             var args = text.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries);
             if (!args.Any())
@@ -26,16 +18,16 @@ namespace Server
                 return ParseCreateCommand(args);
             case "start":
                 return ParseStartCommandOptions(args);
-            case "pause":
-                return ParsePauseCommandOptions(args);
+            case "stop":
+                return ParseStopCommandOptions(args);
             default:
                 throw new CommandParseException($"Unknown command: {args[0]}");
             }
         }
 
-        private static Command ParseCreateCommand(string[] args)
+        private static CreateCommand ParseCreateCommand(string[] args)
         {
-            var command = new Command {Type = CommandType.Create};
+            var command = new CreateCommand();
             for (var i = 1; i < args.Length; i++)
             {
                 switch (args[i])
@@ -73,10 +65,10 @@ namespace Server
                     }
                     throw new CommandParseException($"Cannot parse dependent task id: {args[i]}");
                 default:
-                    int duration;
-                    if (int.TryParse(args[i], out duration))
+                    int steps;
+                    if (int.TryParse(args[i], out steps))
                     {
-                        command.Duration = duration;
+                        command.Steps = steps;
                         continue;
                     }
                     throw new CommandParseException($"Cannot parse parameter: {args[i]}");
@@ -86,22 +78,22 @@ namespace Server
             return command;
         }
 
-        private static Command ParseStartCommandOptions(string[] args)
+        private static StartCommand ParseStartCommandOptions(string[] args)
         {
             int id;
             if (args.Length == 2 && int.TryParse(args[1], out id))
             {
-                return new Command {Type = CommandType.Start, TaskId = id};
+                return new StartCommand {TaskId = id};
             }
             throw new CommandParseException("Cannot parse start command");
         }
 
-        private static Command ParsePauseCommandOptions(string[] args)
+        private static StopCommand ParseStopCommandOptions(string[] args)
         {
             int id;
             if (args.Length == 2 && int.TryParse(args[1], out id))
             {
-                return new Command {Type = CommandType.Pause, TaskId = id};
+                return new StopCommand {TaskId = id};
             }
             throw new CommandParseException("Cannot parse stop command");
         }

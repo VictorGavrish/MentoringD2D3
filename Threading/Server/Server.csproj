@@ -43,17 +43,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command.cs" />
-    <Compile Include="CommandParseException.cs" />
+    <Compile Include="AppTaskOptions.cs" />
+    <Compile Include="AppTaskScheduler.cs" />
     <Compile Include="CommandProcessor.cs" />
+    <Compile Include="CreateCommand.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="CommandParseException.cs" />
+    <Compile Include="CommandParser.cs" />
+    <Compile Include="CommandDispatcher.cs" />
     <Compile Include="CommandType.cs" />
     <Compile Include="ConsoleTaskExtensions.cs" />
     <Compile Include="DisplayLoop.cs" />
+    <Compile Include="StopCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scheduler.cs" />
+    <Compile Include="AppTaskQueue.cs" />
     <Compile Include="SocketListener.cs" />
     <Compile Include="AppTask.cs" />
+    <Compile Include="StartCommand.cs" />
     <Compile Include="TaskStatus.cs" />
   </ItemGroup>
   <ItemGroup>
