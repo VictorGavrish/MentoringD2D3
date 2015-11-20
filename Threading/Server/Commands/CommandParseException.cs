@@ -1,8 +1,9 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Server
+namespace Server.Commands
 {
+    [Serializable]
     public class CommandParseException : Exception
     {
         public CommandParseException()

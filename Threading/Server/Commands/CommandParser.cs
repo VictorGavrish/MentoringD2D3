@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Server
+namespace Server.Commands
 {
     public static class CommandParser
     {
@@ -20,9 +20,35 @@ namespace Server
                 return ParseStartCommandOptions(args);
             case "stop":
                 return ParseStopCommandOptions(args);
+            case "pause":
+                return ParsePauseCommandOptions(args);
+            case "cancel":
+                return ParseCancelCommandOptions(args);
+            case "reset":
+                return ParseResetCommandOptions(args);
+            case "create-parent":
+                return ParseCreateParentCommandOptions(args);
             default:
                 throw new CommandParseException($"Unknown command: {args[0]}");
             }
+        }
+
+        private static CreateParentCommand ParseCreateParentCommandOptions(string[] args)
+        {
+            var command = new CreateParentCommand();
+            for (var i = 1; i < args.Length; i++)
+            {
+                int id;
+                if (int.TryParse(args[i], out id))
+                {
+                    command.ChildTaskIds.Add(id);
+                }
+                else
+                {
+                    throw new CommandParseException("Cannot parse create parent command");
+                }
+            }
+            return command;
         }
 
         private static CreateCommand ParseCreateCommand(string[] args)
@@ -45,7 +71,7 @@ namespace Server
                     int delay;
                     if (int.TryParse(args[i + 1], out delay))
                     {
-                        command.Delay = TimeSpan.FromSeconds(delay);
+                        command.DelayInSeconds = delay;
                         i++;
                         continue;
                     }
@@ -65,10 +91,10 @@ namespace Server
                     }
                     throw new CommandParseException($"Cannot parse dependent task id: {args[i]}");
                 default:
-                    int steps;
-                    if (int.TryParse(args[i], out steps))
+                    int iterations;
+                    if (int.TryParse(args[i], out iterations))
                     {
-                        command.Steps = steps;
+                        command.Iterations = iterations;
                         continue;
                     }
                     throw new CommandParseException($"Cannot parse parameter: {args[i]}");
@@ -96,6 +122,51 @@ namespace Server
                 return new StopCommand {TaskId = id};
             }
             throw new CommandParseException("Cannot parse stop command");
+        }
+
+        private static PauseCommand ParsePauseCommandOptions(string[] args)
+        {
+            int id;
+            if (args.Length == 2 && int.TryParse(args[1], out id))
+            {
+                return new PauseCommand {TaskId = id};
+            }
+            throw new CommandParseException("Cannot parse pause command");
+        }
+
+        private static CancelCommand ParseCancelCommandOptions(string[] args)
+        {
+            int id;
+            if (args.Length == 2 && int.TryParse(args[1], out id))
+            {
+                return new CancelCommand {TaskId = id};
+            }
+            throw new CommandParseException("Cannot parse cancel command");
+        }
+
+        private static ResetCommand ParseResetCommandOptions(string[] args)
+        {
+            var command = new ResetCommand();
+            for (var i = 1; i < args.Length; i++)
+            {
+                if (args[i] == "--stop")
+                {
+                    command.IsStopSet = true;
+                    continue;
+                }
+
+                int id;
+                if (int.TryParse(args[1], out id))
+                {
+                    command.TaskId = id;
+                }
+                else
+                {
+                    throw new CommandParseException("Cannot parse reset command");
+                }
+            }
+
+            return command;
         }
     }
 }

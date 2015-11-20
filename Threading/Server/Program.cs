@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Net;
-using System.Threading;
+using Server.Jobs;
+using Server.Services;
 
 namespace Server
 {
@@ -9,42 +10,37 @@ namespace Server
     {
         private static void Main(string[] args)
         {
-            var semaphore = GetSemaphoreFromUser();
-            var cancelationSource = new CancellationTokenSource();
-            var allTaskList = new BlockingCollection<AppTask>();
-
-            var scheduler = new AppTaskScheduler(semaphore);
-            var queue = new AppTaskQueue(allTaskList, scheduler);
-            var listener = new SocketListener(IPAddress.Loopback, 6666);
-
-            var display = new Display(allTaskList);
-            var processor = new CommandProcessor(allTaskList, queue);
-            var commandProcessor = new CommandDispatcher(listener, processor);
-
-            commandProcessor.Start(cancelationSource.Token);
-            display.Start(cancelationSource.Token);
-
-            Console.ReadLine();
-
-            cancelationSource.Cancel();
+            var maxConcurrentJobs = GetMaxConcurrentJobs();
+            var allTaskList = new BlockingCollection<Job>();
+            var socketServer = new SocketServer(IPAddress.Loopback, 6666);
+            var jobQueue = new JobQueue();
+            var scheduler = new Scheduler(jobQueue);
+            using (var queueProcessor = new QueueProcessor(maxConcurrentJobs, jobQueue))
+            {
+                var commandProcessor = new CommandProcessor(allTaskList, scheduler, jobQueue, queueProcessor);
+                using (var dispatcher = new CommandDispatcherService(socketServer, commandProcessor))
+                using (var display = new DisplayService(allTaskList, jobQueue))
+                {
+                    Console.ReadLine();
+                }
+            }
         }
 
-        private static SemaphoreSlim GetSemaphoreFromUser()
+        private static int GetMaxConcurrentJobs()
         {
-            SemaphoreSlim semaphore;
+            int maxConcurrentJobs;
             while (true)
             {
-                Console.WriteLine("Please enter the maximum amount of concurrent tasks:");
+                Console.Write("Please enter the maximum amount of concurrent tasks: ");
                 var input = Console.ReadLine();
-                int maxConcurrentTasks;
-                if (int.TryParse(input, out maxConcurrentTasks))
+
+                if (int.TryParse(input, out maxConcurrentJobs))
                 {
-                    semaphore = new SemaphoreSlim(maxConcurrentTasks);
                     break;
                 }
                 Console.WriteLine($"Error parsing as integer: {input}");
             }
-            return semaphore;
+            return maxConcurrentJobs;
         }
     }
 }

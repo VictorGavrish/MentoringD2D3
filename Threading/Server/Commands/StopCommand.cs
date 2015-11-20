@@ -1,4 +1,4 @@
-namespace Server
+namespace Server.Commands
 {
     public class StopCommand : ICommand
     {

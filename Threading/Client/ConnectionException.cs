@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Client
 {
+    [Serializable]
     public class ConnectionException : Exception
     {
         public ConnectionException()

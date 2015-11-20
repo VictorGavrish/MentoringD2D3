@@ -2,14 +2,16 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Server.Commands;
+using Server.Tools;
 
-namespace Server
+namespace Server.Services
 {
-    public class SocketListener
+    public class SocketServer
     {
         private readonly Socket _listener;
 
-        public SocketListener(IPAddress ipAddress, int port)
+        public SocketServer(IPAddress ipAddress, int port)
         {
             var endPoint = new IPEndPoint(ipAddress, port);
             _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
