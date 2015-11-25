@@ -39,7 +39,8 @@ namespace Async
             //    var result = calc.Calculate().Result;
             //    Console.WriteLine($"Remote result: {result}");
             //}
-            //Console.ReadLine();
+
+            Console.ReadLine();
         }
     }
 }

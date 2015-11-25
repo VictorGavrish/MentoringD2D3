@@ -16,14 +16,13 @@ namespace Sources
 
         private static int _lastId;
         private static readonly Lazy<Random> LazyRandom = new Lazy<Random>(LazyThreadSafetyMode.ExecutionAndPublication);
+        private static Random Random => LazyRandom.Value;
         private readonly int _id;
 
         public LocalSource()
         {
             _id = Interlocked.Increment(ref _lastId);
         }
-
-        private static Random Random => LazyRandom.Value;
 
         public async Task<int[]> GetNextArrayAsync()
         {
