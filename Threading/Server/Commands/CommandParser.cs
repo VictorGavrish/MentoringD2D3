@@ -156,7 +156,7 @@ namespace Server.Commands
                 }
 
                 int id;
-                if (int.TryParse(args[1], out id))
+                if (int.TryParse(args[i], out id))
                 {
                     command.TaskId = id;
                 }

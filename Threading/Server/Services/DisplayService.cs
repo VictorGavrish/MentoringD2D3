@@ -56,7 +56,7 @@ namespace Server.Services
                     Console.WriteLine($"{job.GetIdentifierString()} {job.GetStatusString()}");
                 }
                 Console.WriteLine("Completed: ");
-                foreach (var job in _allTasks.Where(t => t.Status == JobStatus.Stopped))
+                foreach (var job in _allTasks.Where(t => t.Status == JobStatus.Complete))
                 {
                     Console.WriteLine($"{job.GetIdentifierString()} {job.GetStatusString()}");
                 }
