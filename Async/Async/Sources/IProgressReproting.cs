@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Async.Sources
+namespace Sources
 {
     public interface IProgressReproting
     {

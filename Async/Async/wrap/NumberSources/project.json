@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net452": {
+      "wrappedProject": "../../NumberSources/NumberSources.csproj",
+      "bin": {
+        "assembly": "../../NumberSources/obj/{configuration}/NumberSources.dll",
+        "pdb": "../../NumberSources/obj/{configuration}/NumberSources.pdb"
+      }
+    }
+  }
+}

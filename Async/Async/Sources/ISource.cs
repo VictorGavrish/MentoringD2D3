@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Async.Sources
+namespace Sources
 {
     public interface ISource
     {
