@@ -22,34 +22,39 @@
             Console.WriteLine("Inside Caluclator. Requesting data from sources...");
             var results = this.RequestResults();
             Console.WriteLine("Inside Calculator. Starting calculation of per-source results...");
-            var sourceResults = await Task.Factory.StartNew(() => CalculatePerSource(results));
+            var sourceResults = await Task.Run(() => CalculatePerSource(results));
             Console.WriteLine("Inside Calculator. Starting calculation of final result...");
-            var finalResult = await Task.Factory.StartNew(() => CalculateFinalResult(sourceResults));
+            var finalResult = await Task.Run(() => CalculateFinalResult(sourceResults));
             return finalResult;
         }
 
         private static BigInteger CalculateFinalResult(IEnumerable<long> sourceResults)
         {
-            var result = sourceResults.Select(l => new BigInteger(l)).Aggregate((a, b) => a * b);
+            var results = sourceResults.ToArray();
+            if (!results.Any())
+            {
+                return BigInteger.Zero;
+            }
+            var result = results.Select(l => new BigInteger(l)).Aggregate((a, b) => a * b);
             Console.WriteLine("Inside Calculator. Finished cacluating the final result");
             return result;
         }
 
-        private static IEnumerable<long> CalculatePerSource(IEnumerable<int[]> results)
+        private static IEnumerable<long> CalculatePerSource(IEnumerable<SourceResult> results)
         {
-            var sign = 1;
             var count = 0;
             foreach (var result in results)
             {
-                Console.WriteLine($"Inside Calculator. Starting calculation for response #{++count}");
-                var perSourceCalc = result.Sum(i => (long)i) * sign;
+                var sign = result.Id % 2 == 0 ? -1 : 1;
+                Console.WriteLine(
+                    $"Inside Calculator. Starting calculation for response #{++count} from source #{result.Id}");
+                var perSourceCalc = result.Values.Where(i => i.HasValue).Sum(i => (long)i.Value) * sign;
                 Console.WriteLine($"Inside Calculator. Calculation for response #{count} complete: {perSourceCalc}");
                 yield return perSourceCalc;
-                sign = -sign;
             }
         }
 
-        private IEnumerable<int[]> RequestResults()
+        private IEnumerable<SourceResult> RequestResults()
         {
             var tasks = this.sources.Select(source => source.GetNextArrayAsync()).ToList();
             Console.WriteLine("Inside Calculator. Requests sent. Wating for results");
@@ -61,7 +66,13 @@
                 var completedTask = Task.WhenAny(tasksSnapshot).Result;
                 Console.WriteLine($"Inside Calculator. Received response #{++count}");
                 tasks.Remove(completedTask);
-                yield return completedTask.Result;
+                if (completedTask.Result.Failure)
+                {
+                    Console.WriteLine($"Failed to receive data: {completedTask.Result.Error}");
+                    continue;
+                }
+
+                yield return completedTask.Result.Value;
             }
         }
     }

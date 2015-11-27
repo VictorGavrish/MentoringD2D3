@@ -44,10 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorReportingType.cs" />
     <Compile Include="ISource.cs" />
     <Compile Include="LocalSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteSource.cs" />
+    <Compile Include="Result.cs" />
+    <Compile Include="SourceException.cs" />
+    <Compile Include="SourceResult.cs" />
     <Compile Include="Tools\JsonDownloader.cs" />
   </ItemGroup>
   <ItemGroup>
