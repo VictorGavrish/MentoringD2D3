@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace Sources
+﻿namespace Sources
 {
+    using System.Threading.Tasks;
+
     public interface ISource
     {
         Task<int[]> GetNextArrayAsync();

@@ -1,20 +1,21 @@
-using System.Threading.Tasks;
-using Sources.Tools;
-
 namespace Sources
 {
+    using System.Threading.Tasks;
+
+    using Sources.Tools;
+
     public class RemoteSource : ISource
     {
-        private readonly string _url;
+        private readonly string url;
 
         public RemoteSource(string url)
         {
-            _url = url;
+            this.url = url;
         }
 
         public async Task<int[]> GetNextArrayAsync()
         {
-            return await JsonDownloader.DownloadSerializedJSONDataAsync<int[]>(_url);
+            return await JsonDownloader.DownloadSerializedJsonDataAsync<int[]>(this.url);
         }
     }
 }

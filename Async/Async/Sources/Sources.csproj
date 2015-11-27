@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IProgressReproting.cs" />
     <Compile Include="ISource.cs" />
     <Compile Include="LocalSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

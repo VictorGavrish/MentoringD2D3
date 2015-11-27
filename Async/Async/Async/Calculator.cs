@@ -1,25 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Threading.Tasks;
-using Sources;
-
-namespace Async
+﻿namespace Async
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Numerics;
+    using System.Threading.Tasks;
+
+    using Sources;
+
     public class Calculator
     {
-        private readonly IEnumerable<ISource> _sources;
+        private readonly IEnumerable<ISource> sources;
 
         public Calculator(IEnumerable<ISource> sources)
         {
-            _sources = sources;
+            this.sources = sources;
         }
 
         public async Task<BigInteger> Calculate()
         {
             Console.WriteLine("Inside Caluclator. Requesting data from sources...");
-            var results = RequestResults();
+            var results = this.RequestResults();
             Console.WriteLine("Inside Calculator. Starting calculation of per-source results...");
             var sourceResults = await Task.Factory.StartNew(() => CalculatePerSource(results));
             Console.WriteLine("Inside Calculator. Starting calculation of final result...");
@@ -27,19 +28,11 @@ namespace Async
             return finalResult;
         }
 
-        private IEnumerable<int[]> RequestResults()
+        private static BigInteger CalculateFinalResult(IEnumerable<long> sourceResults)
         {
-            var tasks = _sources.Select(source => source.GetNextArrayAsync()).ToList();
-            Console.WriteLine("Inside Calculator. Requests sent. Wating for results");
-            var count = 0;
-            while (tasks.Any())
-            {
-                var tasksSnapshot = tasks.ToArray();
-                var completedTask = Task.WhenAny(tasksSnapshot).Result;
-                Console.WriteLine($"Inside Calculator. Received response #{++count}");
-                tasks.Remove(completedTask);
-                yield return completedTask.Result;
-            }
+            var result = sourceResults.Select(l => new BigInteger(l)).Aggregate((a, b) => a * b);
+            Console.WriteLine("Inside Calculator. Finished cacluating the final result");
+            return result;
         }
 
         private static IEnumerable<long> CalculatePerSource(IEnumerable<int[]> results)
@@ -49,18 +42,27 @@ namespace Async
             foreach (var result in results)
             {
                 Console.WriteLine($"Inside Calculator. Starting calculation for response #{++count}");
-                var perSourceCalc = result.Sum(i => (long) i) * sign;
+                var perSourceCalc = result.Sum(i => (long)i) * sign;
                 Console.WriteLine($"Inside Calculator. Calculation for response #{count} complete: {perSourceCalc}");
                 yield return perSourceCalc;
                 sign = -sign;
             }
         }
 
-        private static BigInteger CalculateFinalResult(IEnumerable<long> sourceResults)
+        private IEnumerable<int[]> RequestResults()
         {
-            var result = sourceResults.Select(l => new BigInteger(l)).Aggregate((a, b) => a * b);
-            Console.WriteLine("Inside Calculator. Finished cacluating the final result");
-            return result;
+            var tasks = this.sources.Select(source => source.GetNextArrayAsync()).ToList();
+            Console.WriteLine("Inside Calculator. Requests sent. Wating for results");
+
+            var count = 0;
+            while (tasks.Any())
+            {
+                var tasksSnapshot = tasks.ToArray();
+                var completedTask = Task.WhenAny(tasksSnapshot).Result;
+                Console.WriteLine($"Inside Calculator. Received response #{++count}");
+                tasks.Remove(completedTask);
+                yield return completedTask.Result;
+            }
         }
     }
 }

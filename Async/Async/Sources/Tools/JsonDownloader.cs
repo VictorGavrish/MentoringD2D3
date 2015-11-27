@@ -1,14 +1,15 @@
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-
 namespace Sources.Tools
 {
+    using System;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+
+    using Newtonsoft.Json;
+
     public static class JsonDownloader
     {
-        public static async Task<T> DownloadSerializedJSONDataAsync<T>(string url)
+        public static async Task<T> DownloadSerializedJsonDataAsync<T>(string url)
         {
             using (var httpClient = new HttpClient())
             {
