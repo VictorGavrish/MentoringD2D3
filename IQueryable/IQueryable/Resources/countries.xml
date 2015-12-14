@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<countries>
+    <country>
+        <id>1</id>
+        <name>Belarus</name>
+        <cities>
+            <city>
+                <id>1</id>
+                <name>Gomel</name>
+                <people>
+                    <person>
+                        <id>1</id>
+                        <name>Victor</name>
+                        <age>28</age>
+                    </person>
+                    <person>
+                        <id>2</id>
+                        <name>Alexander</name>
+                        <age>17</age>
+                    </person>
+                    <person>
+                        <id>3</id>
+                        <name>Dmitry</name>
+                        <age>11</age>
+                    </person>
+                </people>
+            </city>
+        </cities>
+    </country>
+</countries>

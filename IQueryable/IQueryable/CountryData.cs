@@ -6,9 +6,7 @@ namespace IQueryable
     using System.Linq;
     using System.Linq.Expressions;
 
-    using CommonEntities.Entities;
-
-    public class CountryData : IOrderedQueryable<Country>
+    public class CountryData<T> : IOrderedQueryable<T>
     {
         public CountryData()
         {
@@ -28,24 +26,19 @@ namespace IQueryable
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            if (!typeof(IQueryable<Country>).IsAssignableFrom(expression.Type))
-            {
-                throw new ArgumentOutOfRangeException(nameof(expression));
-            }
-
             this.Provider = provider;
             this.Expression = expression;
         }
 
-        public Type ElementType => typeof(Person);
+        public Type ElementType => typeof(T);
 
         public Expression Expression { get; }
 
         public IQueryProvider Provider { get; }
 
-        public IEnumerator<Country> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
-            return this.Provider.Execute<IEnumerable<Country>>(this.Expression).GetEnumerator();
+            return this.Provider.Execute<IEnumerable<T>>(this.Expression).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
