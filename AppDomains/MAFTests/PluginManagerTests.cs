@@ -42,7 +42,6 @@
             manager.TryUnload("ExamplePlugin2").ShouldBeEquivalentTo(true);
             manager.TryUnload("ExamplePlugin3").ShouldBeEquivalentTo(true);
 
-            Thread.Sleep(100);
             Directory.Delete(tempDirectoryName, true);
         }
     }
