@@ -28,13 +28,15 @@
             var rootFolder = Path.Combine(Environment.CurrentDirectory, tempDirectoryName, "Pipeline");
 
             var manager = new PluginManager(rootFolder);
-            manager.Load("ExamplePlugin1");
-            manager.Plugin.DoStuff().Should().BeEquivalentTo("From example plugin 1");
-            manager.TryUnload().ShouldBeEquivalentTo(true);
-            manager.Plugin.Should().Be(null);
-            manager.Load("ExamplePlugin2");
-            manager.Plugin.DoStuff().Should().BeEquivalentTo("From example plugin 2");
-            manager.TryUnload().ShouldBeEquivalentTo(true);
+
+            var plugin1 = manager.Load("ExamplePlugin1");
+            var plugin2 = manager.Load("ExamplePlugin2");
+
+            plugin1.DoStuff().Should().BeEquivalentTo("From example plugin 1");
+            plugin2.DoStuff().Should().BeEquivalentTo("From example plugin 2");
+
+            manager.TryUnload("ExamplePlugin1").ShouldBeEquivalentTo(true);
+            manager.TryUnload("ExamplePlugin2").ShouldBeEquivalentTo(true);
 
             Thread.Sleep(100);
             Directory.Delete(tempDirectoryName, true);

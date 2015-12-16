@@ -12,15 +12,15 @@
             var rootFolder = Path.Combine(Environment.CurrentDirectory, "Pipeline");
 
             var manager = new PluginManager(rootFolder);
-            manager.Load("ExamplePlugin1");
-            Console.WriteLine(manager.Plugin.DoStuff());
-            manager.TryUnload();
-            manager.Load("ExamplePlugin2");
-            Console.WriteLine(manager.Plugin.DoStuff());
-            manager.TryUnload();
-            manager.Load("ExamplePlugin3");
-            Console.WriteLine(manager.Plugin.DoStuff());
-            manager.TryUnload();
+            var plugin1 = manager.Load("ExamplePlugin1");
+            var plugin2 = manager.Load("ExamplePlugin2");
+            var plugin3 = manager.Load("ExamplePlugin3");
+            Console.WriteLine(plugin1.DoStuff());
+            Console.WriteLine(plugin2.DoStuff());
+            Console.WriteLine(plugin3.DoStuff());
+            manager.TryUnload("ExamplePlugin1");
+            manager.TryUnload("ExamplePlugin2");
+            manager.TryUnload("ExamplePlugin3");
             Console.ReadLine();
         }
     }

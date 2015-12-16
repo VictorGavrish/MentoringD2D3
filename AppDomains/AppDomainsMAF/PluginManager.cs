@@ -2,8 +2,11 @@
 {
     using System;
     using System.AddIn.Hosting;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.IO;
     using System.Linq;
+    using System.Security.Policy;
 
     using HostView;
 
@@ -11,53 +14,59 @@
     {
         private readonly Collection<AddInToken> addIns;
 
-        private AppDomain domain;
+        private readonly Dictionary<string, AppDomain> domains = new Dictionary<string, AppDomain>();
 
-        public IPlugin Plugin { get; private set; }
+        private readonly DirectoryInfo rootDirectory;
 
         public PluginManager(string rootFolder)
         {
-            var warnings = AddInStore.Update(rootFolder);
-            foreach (var warning in warnings)
-            {
-                Console.WriteLine(warning);
-            }
+            AddInStore.Update(rootFolder);
             this.addIns = AddInStore.FindAddIns(this.SupportedAddInType, rootFolder);
+            this.rootDirectory = new DirectoryInfo(rootFolder);
         }
 
         public Type SupportedAddInType { get; } = typeof(IPlugin);
 
         /// <exception cref="PluginException">Plugin already loaded</exception>
-        public void Load(string addInName)
+        public IPlugin Load(string addInName)
         {
-            if (this.Plugin != null)
+            if (this.domains.ContainsKey(addInName))
             {
-                throw new PluginException("Plugin already loaded");
+                throw new PluginException("Plugin with this name is already loaded");
             }
 
             var addIn = this.addIns.Single(ai => ai.Name == addInName);
-            this.domain = AppDomain.CreateDomain(addIn.Name);
-            this.Plugin = addIn.Activate<IPlugin>(AddInSecurityLevel.FullTrust, addIn.Name);
+            var domainSetup = new AppDomainSetup
+                {
+                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                    ShadowCopyFiles = "true",
+                    ShadowCopyDirectories = this.rootDirectory.FullName
+                };
+            var domain = AppDomain.CreateDomain(addIn.Name, new Evidence(), domainSetup);
+            this.domains.Add(addInName, domain);
+
+            return addIn.Activate<IPlugin>(domain);
         }
 
         /// <exception cref="PluginException">No plugin loaded</exception>
-        public bool TryUnload()
+        public bool TryUnload(string addInName)
         {
-            if (this.Plugin == null)
+            AppDomain domain;
+            if (!this.domains.TryGetValue(addInName, out domain))
             {
-                throw new PluginException("No plugin loaded");
+                throw new PluginException("Plugin with this name is not loaded");
             }
 
             try
             {
-                AppDomain.Unload(this.domain);
+                AppDomain.Unload(domain);
+                this.domains.Remove(addInName);
             }
             catch (CannotUnloadAppDomainException ex)
             {
                 return false;
             }
-
-            this.Plugin = null;
+            
             return true;
         }
     }
