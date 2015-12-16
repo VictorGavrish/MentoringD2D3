@@ -9,7 +9,7 @@
     {
         public string DoStuff()
         {
-            return "From example MAF plugin";
+            return "From example plugin 1";
         }
     }
 }

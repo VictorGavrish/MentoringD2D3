@@ -16,7 +16,7 @@
         {
             Contract.Requires(pluginType != null);
             Contract.Requires(typeof(IPlugin).IsAssignableFrom(pluginType));
-            Contract.Requires(typeof(MarshalByRefObject).IsAssignableFrom(pluginType));
+            ////Contract.Requires(typeof(MarshalByRefObject).IsAssignableFrom(pluginType));
 
             this.assemblyName = pluginType.Assembly.GetName().Name;
             this.typeName = pluginType.FullName;

@@ -20,6 +20,7 @@
             wrapper.Start();
             
             // assert
+            var currentDomainName = AppDomain.CurrentDomain.FriendlyName;
             wrapper.Plugin.Should().BeOfType<ExamplePlugin>();
             wrapper.Plugin.DoStuff().Should().BeEquivalentTo("AppDomainTests.PluginWrapperTests+ExamplePlugin");
         }
@@ -39,6 +40,7 @@
             wrapper.Plugin.Should().Be(null);
         }
 
+        [Serializable]
         private class ExamplePlugin : MarshalByRefObject, IPlugin
         {
             public string DoStuff()

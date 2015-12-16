@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C27BE740-9CAC-450C-A9DA-F3BAD9A46D7D}</ProjectGuid>
+    <ProjectGuid>{DAC7EF0C-60D8-4488-BC5E-2ABDF62C9591}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AppDomainsMAF</RootNamespace>
-    <AssemblyName>AppDomainsMAF</AssemblyName>
+    <RootNamespace>ExamplePluginV2</RootNamespace>
+    <AssemblyName>ExamplePluginV2</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,7 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.AddIn" />
-    <Reference Include="System.AddIn.Contract" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -42,18 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PluginException.cs" />
-    <Compile Include="PluginManager.cs" />
+    <Compile Include="ExamplePluginV2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HostSideAdapter\HostSideAdapter.csproj">
-      <Project>{ad093972-279f-4699-98e4-2dff47d3f9a0}</Project>
-      <Name>HostSideAdapter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HostView\HostView.csproj">
-      <Project>{21f32f69-be82-49a7-8d35-e1e9b182e1c7}</Project>
-      <Name>HostView</Name>
+    <ProjectReference Include="..\PluginView\PluginView.csproj">
+      <Project>{4ad1996a-5bcf-4b85-bf02-71ed558f0178}</Project>
+      <Name>PluginView</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
