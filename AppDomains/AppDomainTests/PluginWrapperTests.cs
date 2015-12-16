@@ -18,7 +18,7 @@
             // act
             var wrapper = new PluginWrapper(typeof(ExamplePlugin));
             wrapper.Start();
-            
+
             // assert
             var currentDomainName = AppDomain.CurrentDomain.FriendlyName;
             wrapper.Plugin.Should().BeOfType<ExamplePlugin>();

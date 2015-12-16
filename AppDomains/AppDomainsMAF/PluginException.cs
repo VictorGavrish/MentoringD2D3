@@ -10,15 +10,18 @@ namespace AppDomainsMAF
         {
         }
 
-        public PluginException(string message) : base(message)
+        public PluginException(string message)
+            : base(message)
         {
         }
 
-        public PluginException(string message, Exception innerException) : base(message, innerException)
+        public PluginException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
-        protected PluginException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected PluginException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

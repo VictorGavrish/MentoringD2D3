@@ -38,8 +38,8 @@
             var addIn = this.addIns.Single(ai => ai.Name == addInName);
             var domainSetup = new AppDomainSetup
                 {
-                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
-                    ShadowCopyFiles = "true",
+                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory, 
+                    ShadowCopyFiles = "true", 
                     ShadowCopyDirectories = this.rootDirectory.FullName
                 };
             var domain = AppDomain.CreateDomain(addIn.Name, new Evidence(), domainSetup);
@@ -66,7 +66,7 @@
             {
                 return false;
             }
-            
+
             return true;
         }
     }

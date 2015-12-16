@@ -6,9 +6,9 @@
 
     public class PluginWrapper
     {
-        private readonly AppDomain pluginDomain;
-
         private readonly string assemblyName;
+
+        private readonly AppDomain pluginDomain;
 
         private readonly string typeName;
 
@@ -16,8 +16,8 @@
         {
             Contract.Requires(pluginType != null);
             Contract.Requires(typeof(IPlugin).IsAssignableFrom(pluginType));
-            ////Contract.Requires(typeof(MarshalByRefObject).IsAssignableFrom(pluginType));
 
+            ////Contract.Requires(typeof(MarshalByRefObject).IsAssignableFrom(pluginType));
             this.assemblyName = pluginType.Assembly.GetName().Name;
             this.typeName = pluginType.FullName;
             var domainSetup = new AppDomainSetup { ApplicationBase = AppDomain.CurrentDomain.BaseDirectory };
@@ -30,7 +30,7 @@
         {
             Contract.Requires(this.Plugin == null);
             Contract.Ensures(this.Plugin != null);
-            
+
             this.Plugin = (IPlugin)this.pluginDomain.CreateInstanceAndUnwrap(this.assemblyName, this.typeName);
         }
 

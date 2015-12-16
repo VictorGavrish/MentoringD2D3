@@ -23,6 +23,7 @@
             {
                 Directory.Delete(tempDirectoryName, true);
             }
+
             ZipFile.ExtractToDirectory(pluginPath, tempDirectoryName);
 
             var rootFolder = Path.Combine(Environment.CurrentDirectory, tempDirectoryName, "Pipeline");
@@ -31,12 +32,15 @@
 
             var plugin1 = manager.Load("ExamplePlugin1");
             var plugin2 = manager.Load("ExamplePlugin2");
+            var plugin3 = manager.Load("ExamplePlugin3");
 
             plugin1.DoStuff().Should().BeEquivalentTo("From example plugin 1");
             plugin2.DoStuff().Should().BeEquivalentTo("From example plugin 2");
+            plugin3.DoStuff().Should().BeEquivalentTo("From example plugin 3");
 
             manager.TryUnload("ExamplePlugin1").ShouldBeEquivalentTo(true);
             manager.TryUnload("ExamplePlugin2").ShouldBeEquivalentTo(true);
+            manager.TryUnload("ExamplePlugin3").ShouldBeEquivalentTo(true);
 
             Thread.Sleep(100);
             Directory.Delete(tempDirectoryName, true);
