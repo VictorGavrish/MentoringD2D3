@@ -10,9 +10,9 @@
 
     using HostView;
 
-    public class PluginManager
+    public class PluginManager : IDisposable
     {
-        private readonly Collection<AddInToken> addIns;
+        private readonly IList<AddInToken> addIns;
 
         private readonly Dictionary<string, AppDomain> domains = new Dictionary<string, AppDomain>();
 
@@ -21,13 +21,36 @@
         public PluginManager(string rootFolder)
         {
             AddInStore.Update(rootFolder);
-            this.addIns = AddInStore.FindAddIns(this.SupportedAddInType, rootFolder);
+            this.addIns = AddInStore.FindAddIns(this.SupportedAddInType, rootFolder).ToList();
             this.rootDirectory = new DirectoryInfo(rootFolder);
         }
 
         public Type SupportedAddInType { get; } = typeof(IPlugin);
 
-        /// <exception cref="PluginException">Plugin already loaded</exception>
+        public IEnumerable<IPlugin> LoadAll()
+        {
+            var domainSetup = new AppDomainSetup
+            {
+                ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                ShadowCopyFiles = "true",
+                ShadowCopyDirectories = this.rootDirectory.FullName
+            };
+            foreach (var token in this.addIns)
+            {
+                var domain = AppDomain.CreateDomain(token.Name, new Evidence(), domainSetup);
+                this.domains.Add(token.Name, domain);
+                yield return token.Activate<IPlugin>(domain);
+            }
+        }
+
+        public void UnloadAll()
+        {
+            foreach (var domain in this.domains.Values)
+            {
+                AppDomain.Unload(domain);
+            }
+        }
+
         public IPlugin Load(string addInName)
         {
             if (this.domains.ContainsKey(addInName))
@@ -37,18 +60,17 @@
 
             var addIn = this.addIns.Single(ai => ai.Name == addInName);
             var domainSetup = new AppDomainSetup
-                {
-                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory, 
-                    ShadowCopyFiles = "true", 
-                    ShadowCopyDirectories = this.rootDirectory.FullName
-                };
+            {
+                ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                ShadowCopyFiles = "true",
+                ShadowCopyDirectories = this.rootDirectory.FullName
+            };
             var domain = AppDomain.CreateDomain(addIn.Name, new Evidence(), domainSetup);
             this.domains.Add(addInName, domain);
 
             return addIn.Activate<IPlugin>(domain);
         }
 
-        /// <exception cref="PluginException">No plugin loaded</exception>
         public bool TryUnload(string addInName)
         {
             AppDomain domain;
@@ -68,6 +90,13 @@
             }
 
             return true;
+        }
+
+        public void Dispose()
+        {
+            this.UnloadAll();
+            this.addIns.Clear();
+            this.domains.Clear();
         }
     }
 }
