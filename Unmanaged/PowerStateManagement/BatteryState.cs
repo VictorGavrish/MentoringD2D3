@@ -1,5 +1,7 @@
 ﻿namespace PowerStateManagement
 {
+    using System;
+
     public class BatteryState
     {
         private readonly PowerStateManager.SystemBatteryState batteryState;
@@ -11,11 +13,11 @@
             this.batteryState = batteryState;
         }
 
-        public bool AcOnLine => this.batteryState.AcOnLine != 0;
+        public bool AcOnLine => Convert.ToBoolean(this.batteryState.AcOnLine);
 
-        public bool BatteryPresent => this.batteryState.BatteryPresent != 0;
+        public bool BatteryPresent => Convert.ToBoolean(this.batteryState.BatteryPresent);
 
-        public bool Charging => this.batteryState.Charging != 0;
+        public bool Charging => Convert.ToBoolean(this.batteryState.Charging);
 
         public uint DefaultAlert1 => this.batteryState.DefaultAlert1;
 
@@ -37,8 +39,8 @@
                 {
                     this.spare = new[]
                         {
-                            this.batteryState.Spare1 != 0, this.batteryState.Spare2 != 0,
-                            this.batteryState.Spare3 != 0, this.batteryState.Spare4 != 0
+                            Convert.ToBoolean(this.batteryState.Spare1), Convert.ToBoolean(this.batteryState.Spare2), 
+                            Convert.ToBoolean(this.batteryState.Spare3), Convert.ToBoolean(this.batteryState.Spare4)
                         };
                 }
 

@@ -3,7 +3,10 @@
     using System;
     using System.Runtime.InteropServices;
 
-    public class PowerStateManager
+    [ComVisible(true)]
+    [Guid("384b590f-48f4-4483-88c6-c7eeacac15b3")]
+    [ClassInterface(ClassInterfaceType.None)]
+    public class PowerStateManager : IPowerStateManager
     {
         private enum PowerInformationLevel
         {
@@ -18,7 +21,7 @@
             SystemReserveHiberFile = 10
         }
 
-        public ulong GetLastSleepTime()
+        ulong IPowerStateManager.GetLastSleepTime()
         {
             ulong ticks;
             var status = CallNtPowerInformation(
@@ -31,7 +34,7 @@
             return status == NtStatus.Success ? ticks : 0;
         }
 
-        public ulong GetLastWakeTime()
+        ulong IPowerStateManager.GetLastWakeTime()
         {
             ulong ticks;
             var status = CallNtPowerInformation(
@@ -44,7 +47,7 @@
             return status == NtStatus.Success ? ticks : 0;
         }
 
-        public BatteryState GetSystemBatteryState()
+        BatteryState IPowerStateManager.GetSystemBatteryState()
         {
             SystemBatteryState state;
             var status = CallNtPowerInformation(
@@ -62,7 +65,7 @@
             return new BatteryState(state);
         }
 
-        public PowerInformation GetSystemPowerInformation()
+        PowerInformation IPowerStateManager.GetSystemPowerInformation()
         {
             SystemPowerInformation info;
             var status = CallNtPowerInformation(
@@ -80,7 +83,7 @@
             return new PowerInformation(info);
         }
 
-        public void Hibernate()
+        void IPowerStateManager.Hibernate()
         {
             var success = SetSuspendState(true, false, false);
 
@@ -91,7 +94,7 @@
             }
         }
 
-        public void ReserveHiberFile(bool reserve)
+        void IPowerStateManager.ReserveHiberFile(bool reserve)
         {
             var status = CallNtPowerInformation(
                 PowerInformationLevel.SystemReserveHiberFile, 
@@ -106,7 +109,7 @@
             }
         }
 
-        public void Sleep()
+        void IPowerStateManager.Sleep()
         {
             var success = SetSuspendState(false, false, false);
 
@@ -149,7 +152,7 @@
             out SystemBatteryState outputBuffer, 
             int outputBufferSize);
 
-        [DllImport("Powrprof.dll", SetLastError = true)]
+        [DllImport("powrprof.dll", SetLastError = true)]
         private static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
 
         [StructLayout(LayoutKind.Sequential)]

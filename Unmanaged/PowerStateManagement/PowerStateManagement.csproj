@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>true</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BatteryState.cs" />
     <Compile Include="CoolingMode.cs" />
+    <Compile Include="IPowerStateManager.cs" />
     <Compile Include="NtStatus.cs" />
     <Compile Include="PowerInformation.cs" />
     <Compile Include="PowerManagementException.cs" />

@@ -8,13 +8,20 @@
     {
         private static void Main(string[] args)
         {
-            var pm = new PowerStateManager();
+            IPowerStateManager pm = new PowerStateManager();
 
             Console.WriteLine(pm.GetLastSleepTime());
             Console.WriteLine(pm.GetLastWakeTime());
             var batteryState = pm.GetSystemBatteryState();
             var powerInfo = pm.GetSystemPowerInformation();
-            pm.ReserveHiberFile(false);
+            try
+            {
+                pm.ReserveHiberFile(false);
+            }
+            catch (PowerManagementException pme)
+            {
+                Console.WriteLine(pme.Message);
+            }
             ////pm.Hibernate();
             ////pm.Sleep();
         }
