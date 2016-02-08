@@ -8,7 +8,6 @@ namespace Task.DB
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Threading;
-    using System.Xml;
     using System.Xml.Serialization;
 
     [Serializable]
@@ -112,59 +111,6 @@ namespace Task.DB
         private static T ThreadGetData<T>(string slot)
         {
             return (T)Thread.GetData(Thread.GetNamedDataSlot(slot));
-        }
-    }
-
-    public class DeclaredTypeResolver : DataContractResolver
-    {
-        private readonly XmlDictionary typeDictionary = new XmlDictionary();
-
-        public override bool TryResolveType(
-            Type type, 
-            Type declaredType, 
-            DataContractResolver knownTypeResolver, 
-            out XmlDictionaryString typeName, 
-            out XmlDictionaryString typeNamespace)
-        {
-            if (typeof(Category).IsAssignableFrom(type))
-            {
-                typeName = new XmlDictionaryString(this.typeDictionary, "Category", 0);
-                typeNamespace = new XmlDictionaryString(this.typeDictionary, "http://category", 1);
-                return true;
-            }
-
-            if (typeof(Product).IsAssignableFrom(type))
-            {
-                typeName = new XmlDictionaryString(this.typeDictionary, "Product", 1);
-                typeNamespace = new XmlDictionaryString(this.typeDictionary, "http://category", 1);
-                return true;
-            }
-
-            return knownTypeResolver.TryResolveType(
-                declaredType, 
-                declaredType, 
-                knownTypeResolver, 
-                out typeName, 
-                out typeNamespace);
-        }
-
-        public override Type ResolveName(
-            string typeName, 
-            string typeNamespace, 
-            Type declaredType, 
-            DataContractResolver knownTypeResolver)
-        {
-            if (typeNamespace == "http://category" && typeName == "Category")
-            {
-                return typeof(Category);
-            }
-
-            if (typeNamespace == "http://category" && typeName == "Product")
-            {
-                return typeof(Product);
-            }
-
-            return knownTypeResolver.ResolveName(typeName, typeNamespace, declaredType, knownTypeResolver);
         }
     }
 }

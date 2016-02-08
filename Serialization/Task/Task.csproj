@@ -67,9 +67,10 @@
     <Compile Include="DB\Customer.cs" />
     <Compile Include="DB\CustomerDemographic.cs" />
     <Compile Include="DB\Employee.cs" />
+    <Compile Include="DB\DynamicProxyTypeResolver.cs" />
     <Compile Include="DB\Northwind.cs" />
     <Compile Include="DB\Order.cs" />
-    <Compile Include="DB\Order_Detail.cs" />
+    <Compile Include="DB\OrderDetail.cs" />
     <Compile Include="DB\Product.cs" />
     <Compile Include="DB\Region.cs" />
     <Compile Include="DB\Shipper.cs" />

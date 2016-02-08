@@ -16,7 +16,7 @@ namespace Task.DB
 		public virtual DbSet<CustomerDemographic> CustomerDemographics { get; set; }
 		public virtual DbSet<Customer> Customers { get; set; }
 		public virtual DbSet<Employee> Employees { get; set; }
-		public virtual DbSet<Order_Detail> Order_Details { get; set; }
+		public virtual DbSet<OrderDetail> Order_Details { get; set; }
 		public virtual DbSet<Order> Orders { get; set; }
 		public virtual DbSet<Product> Products { get; set; }
 		public virtual DbSet<Region> Regions { get; set; }
@@ -49,7 +49,7 @@ namespace Task.DB
 				.WithMany(e => e.Employees)
 				.Map(m => m.ToTable("EmployeeTerritories").MapLeftKey("EmployeeID").MapRightKey("TerritoryID"));
 
-			modelBuilder.Entity<Order_Detail>()
+			modelBuilder.Entity<OrderDetail>()
 				.Property(e => e.UnitPrice)
 				.HasPrecision(19, 4);
 
@@ -71,7 +71,7 @@ namespace Task.DB
 				.HasPrecision(19, 4);
 
 			modelBuilder.Entity<Product>()
-				.HasMany(e => e.Order_Details)
+				.HasMany(e => e.OrderDetails)
 				.WithRequired(e => e.Product)
 				.WillCascadeOnDelete(false);
 

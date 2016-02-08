@@ -14,19 +14,21 @@
     {
         private Northwind context;
 
+        private DataContractResolver resolver;
+
         [TestInitialize]
         public void Initialize()
         {
             this.context = new Northwind();
+            this.resolver = new DynamicProxyTypeResolver();
         }
 
         [TestMethod]
         public void SerializationCallbacks()
         {
-            var dataContractResolver = new DeclaredTypeResolver();
             var dataContractSerializerSettings = new DataContractSerializerSettings
             {
-                DataContractResolver = dataContractResolver
+                DataContractResolver = this.resolver
             };
             var dataContractSerializer = new DataContractSerializer(typeof(Category), dataContractSerializerSettings);
 
@@ -40,14 +42,18 @@
         [TestMethod]
         public void ISerializable()
         {
-            this.context.Configuration.ProxyCreationEnabled = false;
+            var dataContractSerializerSettings = new DataContractSerializerSettings
+            {
+                DataContractResolver = this.resolver
+            };
 
-            var tester = new XmlDataContractSerializerTester<IEnumerable<Product>>(
-                new NetDataContractSerializer(), 
-                true);
+            var dataContractSerializer = new DataContractSerializer(typeof(IEnumerable<Product>), dataContractSerializerSettings);
+
             var products = this.context.Products.ToList();
 
-            tester.SerializeAndDeserialize(products);
+            var tester = new XmlDataContractSerializerTester<IEnumerable<Product>>(dataContractSerializer, true);
+
+            var productsBack = tester.SerializeAndDeserialize(products);
         }
 
         [TestMethod]
@@ -55,7 +61,7 @@
         {
             this.context.Configuration.ProxyCreationEnabled = false;
 
-            var tester = new XmlDataContractSerializerTester<IEnumerable<Order_Detail>>(
+            var tester = new XmlDataContractSerializerTester<IEnumerable<OrderDetail>>(
                 new NetDataContractSerializer(), 
                 true);
             var orderDetails = this.context.Order_Details.ToList();

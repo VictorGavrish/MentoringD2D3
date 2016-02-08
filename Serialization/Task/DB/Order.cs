@@ -11,7 +11,7 @@ namespace Task.DB
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Order()
         {
-            Order_Details = new HashSet<Order_Detail>();
+            Order_Details = new HashSet<OrderDetail>();
         }
 
         public int OrderID { get; set; }
@@ -55,7 +55,7 @@ namespace Task.DB
         public virtual Employee Employee { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Order_Detail> Order_Details { get; set; }
+        public virtual ICollection<OrderDetail> Order_Details { get; set; }
 
         public virtual Shipper Shipper { get; set; }
     }
