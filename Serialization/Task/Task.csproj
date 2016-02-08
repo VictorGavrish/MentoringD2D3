@@ -47,6 +47,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -71,6 +72,9 @@
     <Compile Include="DB\Northwind.cs" />
     <Compile Include="DB\Order.cs" />
     <Compile Include="DB\OrderDetail.cs" />
+    <Compile Include="DB\OrderDetailsSerializationSurrogate.cs" />
+    <Compile Include="DB\OrderSurrogate.cs" />
+    <Compile Include="DB\OrderSurrogated.cs" />
     <Compile Include="DB\Product.cs" />
     <Compile Include="DB\Region.cs" />
     <Compile Include="DB\Shipper.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelpers\BinaryDataContractSerializerTester.cs" />
     <Compile Include="TestHelpers\SerializationTester.cs" />
+    <Compile Include="TestHelpers\SoapFormatterTester.cs" />
     <Compile Include="TestHelpers\XmlDataContractSerializerTester.cs" />
   </ItemGroup>
   <ItemGroup>

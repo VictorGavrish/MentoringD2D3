@@ -1,8 +1,11 @@
 ﻿namespace Task
 {
+    using System;
     using System.Collections.Generic;
+    using System.Data.Entity;
     using System.Linq;
     using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Formatters.Binary;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -47,7 +50,9 @@
                 DataContractResolver = this.resolver
             };
 
-            var dataContractSerializer = new DataContractSerializer(typeof(IEnumerable<Product>), dataContractSerializerSettings);
+            var dataContractSerializer = new DataContractSerializer(
+                typeof(IEnumerable<Product>), 
+                dataContractSerializerSettings);
 
             var products = this.context.Products.ToList();
 
@@ -59,29 +64,42 @@
         [TestMethod]
         public void ISerializationSurrogate()
         {
-            this.context.Configuration.ProxyCreationEnabled = false;
+            var orderDetails = this.context.OrderDetails.Include(x => x.Product).ToList();
 
-            var tester = new XmlDataContractSerializerTester<IEnumerable<OrderDetail>>(
-                new NetDataContractSerializer(), 
-                true);
-            var orderDetails = this.context.Order_Details.ToList();
+            var selector = new SurrogateSelector();
 
-            tester.SerializeAndDeserialize(orderDetails);
+            selector.AddSurrogate(
+                typeof(OrderDetail), 
+                new StreamingContext(StreamingContextStates.Persistence, null), 
+                new OrderDetailsSerializationSurrogate());
+
+            var binaryFormatter = new BinaryFormatter { SurrogateSelector = selector };
+
+            var tester = new BinaryDataContractSerializerTester<IEnumerable<OrderDetail>>(binaryFormatter, true);
+
+            var orderDetailsBack = tester.SerializeAndDeserialize(orderDetails);
         }
 
         [TestMethod]
         public void IDataContractSurrogate()
         {
-            this.context.Configuration.ProxyCreationEnabled = true;
-            this.context.Configuration.LazyLoadingEnabled = true;
+            var orders = this.context.Orders.ToArray();
+            var knownTypes = new List<Type> { typeof(Order) };
 
+            IDataContractSurrogate surrogate = new OrderSurrogate();
             var tester =
                 new XmlDataContractSerializerTester<IEnumerable<Order>>(
-                    new DataContractSerializer(typeof(IEnumerable<Order>)), 
+                    new DataContractSerializer(
+                        typeof(IEnumerable<Order>), 
+                        knownTypes, 
+                        int.MaxValue, 
+                        false, 
+                        true, 
+                        surrogate,
+                        this.resolver), 
                     true);
-            var orders = this.context.Orders.ToList();
 
-            tester.SerializeAndDeserialize(orders);
+            var ordersBack = tester.SerializeAndDeserialize(orders);
         }
     }
 }
