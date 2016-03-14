@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<directory>
+    <city>
+        <name>Gomel</name>
+        <people>
+            <person>
+                <first-name>Victor</first-name>
+                <last-name>Gavrish</last-name>
+                <address>Victor Street, 10</address>
+                <age>28</age>
+            </person>
+            <person>
+                <first-name>Alexander</first-name>
+                <last-name>Gavrish</last-name>
+                <address>Alexander Street, 11</address>
+                <age>18</age>
+            </person>
+        </people>
+    </city>
+</directory>

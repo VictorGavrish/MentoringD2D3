@@ -21,8 +21,10 @@
             var addressBytes = networkInterface.GetPhysicalAddress().GetAddressBytes();
             var dateBytes = BitConverter.GetBytes(DateTime.Now.Date.ToBinary());
 
-            var numArray =
-                addressBytes.Select((b, index) => b ^ dateBytes[index]).Select(x => x < 999 ? x * 10 : x).ToArray();
+            var numArray = addressBytes
+                .Select((b, index) => b ^ dateBytes[index])
+                .Select(x => x < 999 ? x * 10 : x)
+                .ToArray();
 
             var result = string.Join("-", numArray.Select(i => i.ToString()));
 
