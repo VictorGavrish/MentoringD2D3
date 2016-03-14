@@ -33,8 +33,7 @@
             this.ChangeAds(this, new EventArgs());
 
             // Run the timer that changes the ad's image 
-            this.adTimer = new DispatcherTimer();
-            this.adTimer.Interval = TimeSpan.FromSeconds(3);
+            this.adTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
             this.adTimer.Tick += this.ChangeAds;
             this.adTimer.Start();
         }
@@ -47,7 +46,7 @@
 
         protected override void OnClosed(EventArgs e)
         {
-            // Unsubscribe();
+            this.Unsubscribe();
             base.OnClosed(e);
         }
 

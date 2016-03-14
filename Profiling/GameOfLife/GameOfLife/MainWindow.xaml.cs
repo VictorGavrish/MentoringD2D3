@@ -2,6 +2,7 @@
 {
     using System;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Threading;
 
     public partial class MainWindow : Window
@@ -12,7 +13,7 @@
 
         private int genCounter;
 
-        private AdWindow[] adWindow;
+        private readonly AdWindow[] adWindows;
 
         public MainWindow()
         {
@@ -22,33 +23,31 @@
             this.timer = new DispatcherTimer();
             this.timer.Tick += this.OnTimer;
             this.timer.Interval = TimeSpan.FromMilliseconds(200);
+            this.adWindows = new AdWindow[2];
         }
 
         private void StartAd()
         {
+            for (var i = 0; i < 2; i++)
             {
-                this.adWindow = new AdWindow[2];
-                for (var i = 0; i < 2; i++)
+                if (this.adWindows[i] == null)
                 {
-                    if (this.adWindow[i] == null)
-                    {
-                        this.adWindow[i] = new AdWindow(this);
-                        this.adWindow[i].Closed += this.AdWindowOnClosed;
-                        this.adWindow[i].Top = this.Top + 330 * i + 70;
-                        this.adWindow[i].Left = this.Left + 240;
-                        this.adWindow[i].Show();
-                    }
+                    this.adWindows[i] = new AdWindow(this);
+                    this.adWindows[i].Closed += this.AdWindowOnClosed;
+                    this.adWindows[i].Top = this.Top + 330 * i + 70;
+                    this.adWindows[i].Left = this.Left + 240;
+                    this.adWindows[i].Show();
                 }
             }
         }
 
         private void AdWindowOnClosed(object sender, EventArgs eventArgs)
         {
-            for (var i = 0; i < 2; i++)
-            {
-                this.adWindow[i].Closed -= this.AdWindowOnClosed;
-                this.adWindow[i] = null;
-            }
+            // clean-up: unsubscribe to event handlers and remove from array so the object can be GCed
+            var adWindow = (AdWindow)sender;
+            adWindow.Closed -= this.AdWindowOnClosed;
+            var index = Array.IndexOf(this.adWindows, adWindow);
+            this.adWindows[index] = null;
         }
 
         private void ButtonStartStop_OnClick(object sender, EventArgs e)
